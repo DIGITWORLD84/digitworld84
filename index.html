@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitWorld - Digitalne rešitve prihodnosti</title>
+    <meta name="description" content="DigitWorld - računalniške storitve, programiranje, mrežne rešitve, Industrija 5.0 in hologramsko oglaševanje.">
+    <meta name="author" content="DigitWorld">
+    <meta name="theme-color" content="#0066ff">
+
+    <!-- Open Graph za socialna omrežja -->
+    <meta property="og:title" content="DigitWorld - Digitalne rešitve prihodnosti">
+    <meta property="og:description" content="Računalniške storitve, programiranje, mrežne rešitve, Industrija 5.0 in hologramsko oglaševanje.">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%230066ff'>D</text></svg>">
+
+    <!-- Zunanje knjižnice -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Lastni stili -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- WebGL ozadje -->
+    <div id="webgl-bg" class="webgl-container"></div>
+
+    <!-- Digitalno ozadje -->
+    <div id="digital-bg"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container header-container">
+            <a href="#home" class="logo">Digit<span>World</span></a>
+
+            <div class="menu-btn" aria-label="Meni">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="#home">Domov</a></li>
+                <li><a href="#holograms">Hologrami</a></li>
+                <li><a href="#services">Storitve</a></li>
+                <li><a href="#about">O nas</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+
+        <div class="container hero-content">
+            <h1 class="hero-title">Dobrodošli v DigitWorld</h1>
+            <p class="hero-subtitle">Prihodnost je digitalna - mi jo gradimo danes</p>
+            <p>V podjetju DigitWorld združujemo najnovejšo tehnologijo z inovativnimi pristopi. Naše storitve vključujejo računalniško podporo, razvoj programske opreme, napredne mrežne rešitve in rešitve Industrije 5.0.</p>
+
+            <div class="hero-buttons">
+                <a href="#contact" class="btn btn-primary">Kontaktiraj nas</a>
+                <a href="#holograms" class="btn btn-outline">Oglej si holograme</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hologramska sekcija -->
+    <section id="holograms" class="hologram-section">
+        <div class="container">
+            <h2>Naše Hologramske Rešitve</h2>
+            <div class="hologram-content">
+                <p>Razvijamo napredne hologramske rešitve, ki združujejo umetnost in tehnologijo za ustvarjanje neverjetnih izkušenj. Naši hologrami so popolnoma interaktivni in omogočajo neverjetno realistično predstavitev.</p>
+            </div>
+
+            <div class="hologram-container">
+                <div id="hologram-1" class="webgl-container"></div>
+            </div>
+
+            <div class="hologram-content">
+                <h3>Interaktivni Hologramski Prikazi</h3>
+                <p>Naše hologramske tehnologije omogočajo interaktivno uporabo za oglaševanje, izobraževanje ali zabavo. Ustvarite neverjetne 3D prikaze, ki presegajo meje tradicionalnega oglaševanja.</p>
+                <a href="#contact" class="btn btn-primary">Povabi nas na predstavitev</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Storitve Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Naše Storitve</h2>
+            <div class="services-grid">
+                <div class="service-card digital-border">
+                    <div class="service-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Računalniške storitve</h3>
+                    <p>Vzdrževanje, popravila in svetovanje za vse vaše računalniške potrebe. Hitri odziv in strokovne rešitve.</p>
+                </div>
+
+                <div class="service-card digital-border">
+                    <div class="service-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Programiranje</h3>
+                    <p>Custom rešitve, aplikacije in avtomatizacija procesov. Razvijamo programske rešitve po meri za vaše podjetje.</p>
+                </div>
+
+                <div class="service-card digital-border">
+                    <div class="service-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3>Mrežne rešitve</h3>
+                    <p>Postavljanje in varovanje omrežij. Zagotavljamo zanesljive in varno zaščitene mrežne rešitve.</p>
+                </div>
+
+                <div class="service-card digital-border">
+                    <div class="service-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <h3>Industrija 5.0</h3>
+                    <p>AI integracije in pametne tovarne. Transformiramo vašo proizvodnjo z najsodobnejšimi tehnologijami.</p>
+                </div>
+
+                <div class="service-card digital-border">
+                    <div class="service-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3>Hologramsko oglaševanje</h3>
+                    <p>Inovativna promocija s hologramskimi tehnologijami. Ustvarjamo nepozabne izkušnje za vaše stranke.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- O nas Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>O nas</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Vizija podjetja DigitWorld</h3>
+                    <p>DigitWorld je vodilni ponudnik digitalnih rešitev, ki združuje najsodobnejše tehnologije z inovativnimi pristopi. Naša vizija je omogočati podjetjem digitalno preobrazbo in jih pripeljati v prihodnost.</p>
+                    <p>Posebej smo ponosni na naše pionirske rešitve v hologramskem oglaševanju, kjer združujemo umetnost in tehnologijo za ustvarjanje nepozabnih izkušenj.</p>
+                    <p>Zakaj DigitWorld? Ker nudimo celovite rešitve, smo strokovni in zanesljivi ter vedno iščemo inovativne načine za reševanje izzivov.</p>
+                    <a href="#contact" class="btn">Stopite v stik</a>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="DigitWorld Team">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontakt Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Kontaktirajte nas</h2>
+            <div class="contact-container">
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Ime in priimek</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-pošta</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Sporočilo</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Pošlji sporočilo</button>
+                    </form>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h3>Lokacija</h3>
+                            <p>Digitalna ulica 5, 1000 Ljubljana</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <h3>Telefon</h3>
+                            <p>+386 1 234 56 78</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h3>E-pošta</h3>
+                            <p>info@digitworld.si</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p class="copyright">&copy; 2025 DigitWorld. Vse pravice pridržane.</p>
+        </div>
+    </footer>
+
+    <!-- Zunanje knjižnice -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Lastna skripta -->
+    <script src="script.js"></script>
+</body>
+</html>
