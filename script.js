@@ -2,242 +2,341 @@
    DigitWorld - Skripta
    ========================================================= */
 
-/* ===== 1. DIGITALNO OZADJE S KODAMI ===== */
-function createDigitalBackground() {
-    const digitalBg = document.getElementById('digital-bg');
-    if (!digitalBg) return;
+document.addEventListener('DOMContentLoaded', () => {
+    initHeader();
+    initMobileMenu();
+    initReveal();
+    initCounters();
+    initCardGlow();
+    initSmartHome();
+    initContactForm();
+    initBackground();
+    initHologram();
+    const y = document.getElementById('year');
+    if (y) y.textContent = new Date().getFullYear();
+});
 
-    const characters = '0101011010101010101010101010101010101010101010101010101010101010{}[]()<>;:=+-*/&|^%#@!~';
+/* ===== HEADER, AKTIVNA POVEZAVA, GUMB NA VRH ===== */
+function initHeader() {
+    const header = document.getElementById('header');
+    const toTop = document.getElementById('toTop');
+    const links = document.querySelectorAll('.nav-links a[href^="#"]');
+    const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
 
-    for (let i = 0; i < 50; i++) {
-        const codeLine = document.createElement('div');
-        codeLine.className = 'code-line';
-        codeLine.style.left = (Math.random() * 100) + '%';
-        codeLine.style.animationDelay = (Math.random() * 20) + 's';
-        codeLine.style.animationDuration = (15 + Math.random() * 15) + 's';
+    const onScroll = () => {
+        const y = window.scrollY;
+        header.classList.toggle('scrolled', y > 40);
+        toTop.classList.toggle('show', y > 600);
 
-        let content = '';
-        const length = 10 + Math.floor(Math.random() * 20);
-        for (let j = 0; j < length; j++) {
-            content += characters.charAt(Math.floor(Math.random() * characters.length));
+        let current = '';
+        sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 120) current = '#' + sec.id; });
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === current && !a.classList.contains('nav-cta')));
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+}
+
+/* ===== MOBILNI MENI ===== */
+function initMobileMenu() {
+    const btn = document.getElementById('menuBtn');
+    const nav = document.getElementById('navLinks');
+
+    const close = () => {
+        nav.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+    };
+
+    btn.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        btn.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', String(open));
+    });
+
+    nav.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+}
+
+/* ===== POJAVLJANJE OB SKROLANJU ===== */
+function initReveal() {
+    const items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+        items.forEach(el => el.classList.add('visible'));
+        return;
+    }
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+
+    items.forEach((el, i) => {
+        el.style.transitionDelay = (i % 4) * 80 + 'ms';
+        io.observe(el);
+    });
+}
+
+/* ===== ŠTEVCI ===== */
+function initCounters() {
+    const counters = document.querySelectorAll('[data-count]');
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const target = +el.dataset.count;
+            const start = performance.now();
+            const step = now => {
+                const p = Math.min((now - start) / 1500, 1);
+                el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+                if (p < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+            io.unobserve(el);
+        });
+    });
+    counters.forEach(c => io.observe(c));
+}
+
+/* ===== SIJ NA KARTICAH ===== */
+function initCardGlow() {
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+            card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+        });
+    });
+}
+
+/* ===== PAMETNI DOM ===== */
+function initSmartHome() {
+    // Ploščice v hero nadzorni plošči
+    document.querySelectorAll('[data-toggle]').forEach(tile => {
+        tile.setAttribute('aria-pressed', tile.classList.contains('on'));
+        tile.addEventListener('click', () => {
+            const on = tile.classList.toggle('on');
+            tile.setAttribute('aria-pressed', on);
+        });
+    });
+
+    // Stikala na karticah naprav
+    document.querySelectorAll('.device').forEach(device => {
+        const input = device.querySelector('.switch input');
+        if (!input) return;
+        const sync = () => device.classList.toggle('is-on', input.checked);
+        input.addEventListener('change', sync);
+        sync();
+    });
+
+    // Termostat (sinhroniziran s hero ploščo)
+    const range = document.getElementById('thermoRange');
+    const out = document.getElementById('thermoValue');
+    const heroTemp = document.getElementById('heroTemp');
+    if (range) {
+        range.addEventListener('input', () => {
+            out.textContent = range.value + ' °C';
+            if (heroTemp) heroTemp.textContent = range.value;
+        });
+    }
+}
+
+/* ===== KONTAKTNI OBRAZEC ===== */
+function initContactForm() {
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('formStatus');
+    if (!form) return;
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        let valid = true;
+
+        form.querySelectorAll('[required]').forEach(field => {
+            const ok = field.value.trim() !== '' && (field.type !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value));
+            field.classList.toggle('invalid', !ok);
+            if (!ok) valid = false;
+        });
+
+        if (!valid) {
+            status.textContent = 'Prosimo, pravilno izpolnite vsa polja.';
+            status.className = 'form-status err';
+            return;
         }
 
-        codeLine.textContent = content;
-        digitalBg.appendChild(codeLine);
-    }
+        // TODO: tu povežite pošiljanje na strežnik (npr. fetch na PHP/Formspree)
+        status.textContent = 'Hvala! Vaše sporočilo je bilo poslano. Odgovorili vam bomo v 24 urah.';
+        status.className = 'form-status ok';
+        form.reset();
+    });
+
+    form.querySelectorAll('input, textarea').forEach(f =>
+        f.addEventListener('input', () => f.classList.remove('invalid')));
 }
 
-/* ===== 2. WEBGL OZADJE Z DELCI ===== */
+/* ===== OZADJE: POVEZANE TOČKE (CANVAS 2D) ===== */
 function initBackground() {
-    const container = document.getElementById('webgl-bg');
-    if (!container || typeof THREE === 'undefined') return;
+    const canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let w, h, points = [];
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-    );
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0);
-    container.appendChild(renderer.domElement);
+    const resize = () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+        const count = Math.min(80, Math.floor((w * h) / 18000));
+        points = Array.from({ length: count }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3
+        }));
+    };
 
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 2500;
-    const posArray = new Float32Array(particlesCount * 3);
-    const colorArray = new Float32Array(particlesCount * 3);
+    const draw = () => {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < points.length; i++) {
+            const p = points[i];
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0 || p.x > w) p.vx *= -1;
+            if (p.y < 0 || p.y > h) p.vy *= -1;
 
-    for (let i = 0; i < particlesCount * 3; i += 3) {
-        posArray[i]     = (Math.random() - 0.5) * 100;
-        posArray[i + 1] = (Math.random() - 0.5) * 100;
-        posArray[i + 2] = (Math.random() - 0.5) * 100;
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+            ctx.fill();
 
-        colorArray[i]     = Math.random() * 0.4;
-        colorArray[i + 1] = Math.random() * 0.6 + 0.4;
-        colorArray[i + 2] = Math.random() * 0.4 + 0.6;
-    }
+            for (let j = i + 1; j < points.length; j++) {
+                const q = points[j];
+                const d = Math.hypot(p.x - q.x, p.y - q.y);
+                if (d < 140) {
+                    ctx.strokeStyle = `rgba(59, 130, 246, ${0.18 * (1 - d / 140)})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(q.x, q.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        if (!reduce) requestAnimationFrame(draw);
+    };
 
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
-
-    const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.15,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.8
-    });
-
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-
-    camera.position.z = 5;
-
-    function animate() {
-        requestAnimationFrame(animate);
-        particlesMesh.rotation.x += 0.0002;
-        particlesMesh.rotation.y += 0.0003;
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
 }
 
-/* ===== 3. WEBGL HOLOGRAMSKA ANIMACIJA ===== */
+/* ===== HOLOGRAM (THREE.JS) ===== */
 function initHologram() {
-    const container = document.getElementById('hologram-1');
+    const container = document.getElementById('hologram');
     if (!container || typeof THREE === 'undefined') return;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 0);
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+    camera.position.set(0, 0.5, 6);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
-    // Svetloba
-    scene.add(new THREE.AmbientLight(0x0066ff, 0.6));
+    const group = new THREE.Group();
+    scene.add(group);
 
-    const directionalLight = new THREE.DirectionalLight(0x00ccff, 1.2);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
+    // Glavni objekt - žičnati ikozaeder
+    const core = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1.3, 1),
+        new THREE.MeshBasicMaterial({ color: 0x22d3ee, wireframe: true, transparent: true, opacity: 0.75 })
+    );
+    group.add(core);
 
-    const pointLight = new THREE.PointLight(0x00f2ff, 2, 20);
-    pointLight.position.set(-3, 3, 3);
-    scene.add(pointLight);
-
-    // Glavni hologram
-    const geometry = new THREE.IcosahedronGeometry(2, 1);
-    const material = new THREE.MeshPhongMaterial({
-        color: 0x0066ff,
-        emissive: 0x003366,
-        specular: 0x00ccff,
-        shininess: 100,
-        transparent: true,
-        opacity: 0.7
-    });
-
-    const hologram = new THREE.Mesh(geometry, material);
-    scene.add(hologram);
-
-    // Wireframe obroč
-    const wireframeGeo = new THREE.IcosahedronGeometry(2.4, 1);
-    const wireframeMat = new THREE.MeshBasicMaterial({
-        color: 0x00ccff,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.3
-    });
-    const wireframe = new THREE.Mesh(wireframeGeo, wireframeMat);
-    scene.add(wireframe);
+    // Notranje jedro
+    const inner = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(0.7, 0),
+        new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.35 })
+    );
+    group.add(inner);
 
     // Obroči
-    const ringGeo = new THREE.TorusGeometry(3.2, 0.02, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x00f2ff,
-        transparent: true,
-        opacity: 0.6
+    const rings = [];
+    [1.9, 2.3].forEach((r, i) => {
+        const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(r, 0.01, 8, 120),
+            new THREE.MeshBasicMaterial({ color: i ? 0x3b82f6 : 0x38bdf8, transparent: true, opacity: 0.6 })
+        );
+        ring.rotation.x = Math.PI / 2 + i * 0.4;
+        rings.push(ring);
+        group.add(ring);
     });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.rotation.x = Math.PI / 2;
-    scene.add(ring);
 
-    const ring2 = new THREE.Mesh(ringGeo, ringMat);
-    ring2.rotation.y = Math.PI / 3;
-    ring2.rotation.x = Math.PI / 4;
-    scene.add(ring2);
+    // Delci
+    const count = 400;
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+        const r = 2 + Math.random() * 1.5;
+        const t = Math.random() * Math.PI * 2;
+        const p = Math.acos(2 * Math.random() - 1);
+        pos[i * 3] = r * Math.sin(p) * Math.cos(t);
+        pos[i * 3 + 1] = r * Math.sin(p) * Math.sin(t);
+        pos[i * 3 + 2] = r * Math.cos(p);
+    }
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.03, transparent: true, opacity: 0.8 }));
+    group.add(particles);
 
-    camera.position.z = 6;
+    // Podstavek (projektor)
+    const base = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.2, 1.5, 0.08, 48, 1, true),
+        new THREE.MeshBasicMaterial({ color: 0x22d3ee, wireframe: true, transparent: true, opacity: 0.3 })
+    );
+    base.position.y = -2.1;
+    scene.add(base);
 
-    function animate() {
+    // Interakcija z miško
+    let tx = 0, ty = 0;
+    container.addEventListener('pointermove', e => {
+        const r = container.getBoundingClientRect();
+        tx = ((e.clientX - r.left) / r.width - 0.5) * 1.2;
+        ty = ((e.clientY - r.top) / r.height - 0.5) * 0.8;
+    });
+    container.addEventListener('pointerleave', () => { tx = 0; ty = 0; });
+
+    // Animiraj samo, ko je vidno
+    let visible = false;
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(container);
+
+    const clock = new THREE.Clock();
+    const animate = () => {
         requestAnimationFrame(animate);
+        if (!visible) return;
+        const t = clock.getElapsedTime();
 
-        hologram.rotation.x += 0.005;
-        hologram.rotation.y += 0.008;
+        core.rotation.y = t * 0.4;
+        core.rotation.x = t * 0.2;
+        inner.rotation.y = -t * 0.6;
+        inner.scale.setScalar(1 + Math.sin(t * 2) * 0.08);
+        rings[0].rotation.z = t * 0.5;
+        rings[1].rotation.z = -t * 0.3;
+        particles.rotation.y = t * 0.05;
+        core.material.opacity = 0.6 + Math.sin(t * 3) * 0.15;
 
-        wireframe.rotation.x -= 0.003;
-        wireframe.rotation.y -= 0.004;
-
-        ring.rotation.z += 0.005;
-        ring2.rotation.z -= 0.003;
-
-        const scale = 1 + Math.sin(Date.now() * 0.001) * 0.05;
-        hologram.scale.set(scale, scale, scale);
+        group.rotation.y += (tx - group.rotation.y) * 0.05;
+        group.rotation.x += (ty - group.rotation.x) * 0.05;
+        group.position.y = Math.sin(t) * 0.1;
 
         renderer.render(scene, camera);
-    }
+    };
     animate();
 
     window.addEventListener('resize', () => {
-        const newWidth = container.clientWidth;
-        const newHeight = container.clientHeight;
-
-        camera.aspect = newWidth / newHeight;
+        const w = container.clientWidth, h = container.clientHeight;
+        camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setSize(newWidth, newHeight);
+        renderer.setSize(w, h);
     });
 }
-
-/* ===== 4. MOBILNI MENI IN SCROLL ===== */
-function setupMobileMenu() {
-    const menuBtn = document.querySelector('.menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-    const header = document.getElementById('header');
-
-    if (menuBtn && navLinks) {
-        menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-            });
-        });
-    }
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
-}
-
-/* ===== 5. KONTAKTNI OBRAZEC ===== */
-function setupContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Hvala za vaše sporočilo! V kratkem vas bomo kontaktirali.');
-            this.reset();
-        });
-    }
-}
-
-/* ===== INICIALIZACIJA ===== */
-document.addEventListener('DOMContentLoaded', function () {
-    createDigitalBackground();
-    setupMobileMenu();
-    setupContactForm();
-
-    if (typeof THREE !== 'undefined') {
-        initBackground();
-        initHologram();
-    } else {
-        console.warn('Three.js ni bil naložen.');
-    }
-});

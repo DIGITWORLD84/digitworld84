@@ -2,7 +2,7 @@
 
 Spletna stran podjetja **DigitWorld** – digitalne rešitve za posameznike, podjetja in industrijo.
 
-🌐 **Spletna stran:** https://DIGITWORLD84.github.io/digitwolrd
+🌐 **Spletna stran:** https://UPORABNIK.github.io/digitworld/ *(zamenjaj z dejanskim naslovom)*
 
 ---
 
